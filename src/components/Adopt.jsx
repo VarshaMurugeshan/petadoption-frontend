@@ -22,6 +22,8 @@ const Adopt = () => {
   const [search, setSearch] = useState("");
   const [selectedPet, setSelectedPet] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const filteredPets = pets.filter(pet =>
     pet.name.toLowerCase().includes(search.toLowerCase())
@@ -33,11 +35,36 @@ const Adopt = () => {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    alert(`Adoption request sent for ${selectedPet.name}!`);
-    setFormData({ name: "", email: "", message: "" });
-    setSelectedPet(null);
+  
+    const adoptionData = {
+      petName: formData.petName,
+      name: formData.name,
+      email: formData.email,
+      message: formData.message,
+    };
+  
+    console.log(adoptionData);  
+  
+    fetch("https://petadoption-backend-eoye.onrender.com/api/adopt", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(adoptionData),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.message) {
+          alert(`Adoption request for ${formData.petName} sent!`);
+          setFormData({ petName: "", name: "", email: "", message: "" });
+        } else {
+          alert("Error sending adoption request.");
+        }
+      })
+      .catch((error) => {
+        console.error("Error submitting adoption request:", error);
+        alert("Something went wrong.");
+      });
   };
-
+  
   return (
     <div className="adopt-container">
       <h1>Adopt a Pet</h1>

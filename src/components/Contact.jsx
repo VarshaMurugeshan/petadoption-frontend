@@ -1,9 +1,52 @@
 import React from "react";
 import Navbar from "../components/Navbar";
+import { useState } from "react";
 import Footer from "./Footer";
 import "../styles/contact.css";
 
 const Contact = () => {
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+
+  const [status, setStatus] = useState(""); // To show success or error messages
+
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("https://petadoption-backend-eoye.onrender.com/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setStatus("Form submitted successfully!");
+      } else {
+        const data = await response.json();
+        setStatus(data.message || "Something went wrong!");
+      }
+    } catch (error) {
+      setStatus("Error submitting form.");
+    }
+  };
+
   return (
     <>
 
@@ -16,15 +59,35 @@ const Contact = () => {
           <div className="contact-form">
             <h1>Contact Us</h1>
             <div className="form-details">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <label>Full Name</label>
-                <input type="text" placeholder="Enter your name" required />
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter your name"
+                  required
+                />
 
                 <label>E-mail</label>
-                <input type="email" placeholder="Enter your email" required />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Enter your email"
+                  required
+                />
 
                 <label>Message</label>
-                <textarea placeholder="Write your message" required></textarea>
+                <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
+                  placeholder="Write your message"
+                  required
+                ></textarea>
 
                 <button type="submit">Contact Us</button>
               </form>
