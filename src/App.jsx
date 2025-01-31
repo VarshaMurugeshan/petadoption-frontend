@@ -6,7 +6,7 @@ import Home from "./components/Home";
 import Adopt from "./components/Adopt";
 import Contact from "./components/Contact";
 import Register from "./pages/Register";
-import Login from "./pages/login";
+import Login from "./pages/Login";
 
 const App = () => {
   return (
